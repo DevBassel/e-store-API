@@ -12,7 +12,7 @@ export async function paginate<T>(
   return {
     data,
     total,
-    Pages: Math.ceil(total / limit),
+    pages: Math.ceil(total / limit),
     page,
     limit,
   };

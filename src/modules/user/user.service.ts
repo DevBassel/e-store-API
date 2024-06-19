@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User, UserSerializer } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate';
+import { genSalt, hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -20,19 +21,36 @@ export class UserService {
 
     if (checkUser) throw new ConflictException('user is exist!');
 
-    return this.userRepo.save(userDate);
+    // hash password
+    const hashPassword = await hash(userDate.password, await genSalt());
+
+    await this.userRepo.save({ ...userDate, password: hashPassword });
+
+    return { msg: 'user has been created ^_^' };
   }
+
+  // async updateUser(user: any) {}
 
   async findOneUser(id: number) {
     const user = await this.userRepo.findOneBy({ id });
 
     if (!user) throw new NotFoundException('user not found O_o');
 
-    return user;
+    return new UserSerializer(user);
   }
 
-  getAllUsers() {
+  findWithEmail(email: string) {
+    return this.userRepo.findOneBy({ email });
+  }
+
+  async getAllUsers(page: number = 1, limit: number = 10) {
     const query = this.userRepo.createQueryBuilder('user');
-    return paginate(query, 1, 10);
+    const { data, ...metadata } = await paginate<User>(query, page, limit);
+
+    return { data: data.map((user) => new UserSerializer(user)), metadata };
+  }
+
+  deleteUser(userId: number) {
+    return { msg: `will delete this user ${userId}` };
   }
 }
