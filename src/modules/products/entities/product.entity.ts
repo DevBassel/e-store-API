@@ -9,6 +9,9 @@ export class Product {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  img: string;
+
   @Column()
   description: string;
 
@@ -18,6 +21,6 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
-  //   @Column()
-  //   categoryId: number;
+  @Column()
+  categoryId: number;
 }

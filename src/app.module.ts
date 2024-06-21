@@ -7,6 +7,7 @@ import { BlacklistModule } from './modules/blacklist/blacklist.module';
 import { GlobalJwtModule } from './modules/jwt/jwt.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
     BlacklistModule,
     ProductsModule,
     CategoriesModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}

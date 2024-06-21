@@ -5,25 +5,49 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate';
+import { CategoriesService } from '../categories/categories.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
+    private readonly categoryService: CategoriesService,
+    private readonly cloudeService: CloudinaryService,
   ) {}
-  create(createProductDto: CreateProductDto) {
-    return this.productRepo.save(createProductDto);
+  async create(createProductDto: CreateProductDto, img: Express.Multer.File) {
+    const cat = await this.categoryService.findOne(createProductDto.categoryId);
+    if (!cat) throw new NotFoundException('category not found');
+    const upload = await this.cloudeService.uploadFile(img, {
+      folder: 'store/products',
+      transformation: [
+        { width: '600', height: 600, crop: 'limit' },
+        { quality: 'auto:good' },
+      ],
+    });
+    return this.productRepo.save({ ...createProductDto, img: upload.url });
   }
 
-  findAll(page: number = 1, limit: number = 10) {
-    return paginate(
-      this.productRepo
-        .createQueryBuilder('p')
-        .leftJoinAndSelect('p.category', 'c'),
-      page,
-      limit,
-    );
+  findAll(page: number, limit: number, category: string) {
+    if (category !== 'all') {
+      return paginate(
+        this.productRepo
+          .createQueryBuilder('p')
+          .leftJoinAndSelect('p.category', 'c')
+          .where('c.name = :name', { name: category }),
+        page,
+        limit,
+      );
+    } else {
+      return paginate(
+        this.productRepo
+          .createQueryBuilder('p')
+          .leftJoinAndSelect('p.category', 'c'),
+        page,
+        limit,
+      );
+    }
   }
 
   async findOne(id: number) {
@@ -37,7 +61,16 @@ export class ProductsService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.findOne(id);
-    return this.productRepo.save({ ...product, ...updateProductDto });
+    const cat = await this.categoryService.findOne(updateProductDto.categoryId);
+
+    if (!cat) throw new NotFoundException('category not found');
+    console.log({ cat, updateProductDto });
+
+    return this.productRepo.save({
+      ...product,
+      ...updateProductDto,
+      category: { ...cat },
+    });
   }
 
   remove(id: number) {
