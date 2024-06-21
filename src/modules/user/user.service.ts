@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +10,8 @@ import { User, UserSerializer } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate';
 import { genSalt, hash } from 'bcrypt';
+import { JwtPayload } from '../auth/dto/jwt-payload';
+import { UpdateProfileDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,8 +31,24 @@ export class UserService {
 
     return { msg: 'user has been created ^_^' };
   }
+  async getProfile(user: JwtPayload) {
+    console.log(user);
+    return new UserSerializer(
+      await this.userRepo.findOneBy({
+        id: user.id,
+      }),
+    );
+  }
 
-  // async updateUser(user: any) {}
+  async updateProfile(userData: UpdateProfileDto, user: JwtPayload) {
+    const getUser = await this.findOneUser(user.id);
+
+    if (getUser.id !== user.id) throw new UnauthorizedException();
+
+    await this.userRepo.save({ ...getUser, ...userData });
+
+    return { msg: 'user updated' };
+  }
 
   async findOneUser(id: number) {
     const user = await this.userRepo.findOneBy({ id });

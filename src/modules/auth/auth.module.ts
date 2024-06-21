@@ -1,25 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/modules/user/user.module';
 import { AuthService } from './auth.service';
 import { JWTStrategy } from './strategy/jwt.strategy';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { BlacklistModule } from '../blacklist/blacklist.module';
 
+@Global()
 @Module({
-  imports: [
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        global: true,
-        secret: config.getOrThrow('JWT_KEY'),
-        signOptions: {
-          expiresIn: '30d',
-        },
-      }),
-      inject: [ConfigService],
-    }),
-    UserModule,
-  ],
+  imports: [UserModule, BlacklistModule],
   controllers: [AuthController],
   providers: [AuthService, JWTStrategy],
 })

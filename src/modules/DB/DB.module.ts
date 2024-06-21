@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: config.getOrThrow('DB_USERNAME'),
         password: config.getOrThrow('DB_PASSWORD'),
         autoLoadEntities: true,
+        entities: ['src/app/models/postgres/*.ts'],
         synchronize: true,
         logger: 'file',
         logging: true,
