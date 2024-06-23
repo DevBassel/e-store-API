@@ -29,13 +29,25 @@ export class ProductsService {
     return this.productRepo.save({ ...createProductDto, img: upload.url });
   }
 
-  findAll(page: number, limit: number, category: string) {
-    if (category !== 'all') {
+  findAll(
+    page: number,
+    limit: number,
+    filter: {
+      category: string;
+      min: number;
+      max: number;
+    },
+  ) {
+    if (filter.category !== 'all') {
       return paginate(
         this.productRepo
           .createQueryBuilder('p')
           .leftJoinAndSelect('p.category', 'c')
-          .where('c.name = :name', { name: category }),
+          .where('c.name = :name', { name: filter.category })
+          .andWhere('p.price BETWEEN :min AND :max', {
+            min: filter.min,
+            max: filter.max,
+          }),
         page,
         limit,
       );
@@ -43,7 +55,11 @@ export class ProductsService {
       return paginate(
         this.productRepo
           .createQueryBuilder('p')
-          .leftJoinAndSelect('p.category', 'c'),
+          .leftJoinAndSelect('p.category', 'c')
+          .where('p.price BETWEEN :min AND :max', {
+            min: filter.min,
+            max: filter.max,
+          }),
         page,
         limit,
       );

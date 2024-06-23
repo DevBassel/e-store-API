@@ -11,6 +11,11 @@ export class CreateProductDto {
   description: string;
 
   @IsNumber()
+  @Type(() => Number)
+  @Min(1)
+  stock: number;
+
+  @IsNumber()
   @Min(1)
   @Type(() => Number)
   price: number;

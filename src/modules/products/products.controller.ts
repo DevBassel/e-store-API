@@ -35,8 +35,10 @@ export class ProductsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('category', new DefaultValuePipe('all')) category: string,
+    @Query('min', new DefaultValuePipe(0)) min: number,
+    @Query('max', new DefaultValuePipe(1_000_000)) max: number,
   ) {
-    return this.productsService.findAll(page, limit, category);
+    return this.productsService.findAll(page, limit, { category, max, min });
   }
 
   @Get(':id')
