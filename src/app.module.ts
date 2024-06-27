@@ -8,6 +8,7 @@ import { GlobalJwtModule } from './modules/jwt/jwt.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
     ProductsModule,
     CategoriesModule,
     CloudinaryModule,
+    CartModule,
   ],
 })
 export class AppModule {}
