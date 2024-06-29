@@ -1,6 +1,13 @@
 import { CartItem } from 'src/modules/cart/entities/cart-Item.entiy';
 import { Category } from 'src/modules/categories/entities/category.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { OrderItem } from 'src/modules/order/entities/order-item.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Product {
@@ -30,6 +37,9 @@ export class Product {
 
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
+
+  @OneToOne(() => OrderItem, (item) => item.product)
+  orderItem: OrderItem;
 
   @Column()
   categoryId: number;
