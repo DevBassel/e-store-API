@@ -13,6 +13,7 @@ import { ProductsService } from '../products/products.service';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { CartItem } from './entities/cart-Item.entiy';
 import { OrderStatus } from '../order/enums/order-status.enum';
+import { OrderService } from '../order/order.service';
 
 @Injectable()
 export class CartService {
@@ -21,6 +22,7 @@ export class CartService {
     @InjectRepository(CartItem)
     private readonly cartItemRepo: Repository<CartItem>,
     private readonly productsService: ProductsService,
+    readonly orderService: OrderService,
   ) {}
   async create(createCartDto: CreateCartDto, user: JwtPayload) {
     const product = await this.productsService.findOne(createCartDto.productId);

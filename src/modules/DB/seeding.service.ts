@@ -6,6 +6,8 @@ import { EntityManager } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Category } from '../categories/entities/category.entity';
 import { Product } from '../products/entities/product.entity';
+import { Order } from '../order/entities/order.entity';
+import { Blacklist } from '../blacklist/entities/blacklist.entity';
 
 @Injectable()
 export class SeedingService {
@@ -62,5 +64,13 @@ export class SeedingService {
       stock: faker.number.int({ min: 1, max: 500 }),
     };
     await this.em.save(Product, productData);
+  }
+
+  async clear() {
+    await this.em.delete(Blacklist, {});
+    await this.em.delete(Order, {});
+    await this.em.delete(Product, {});
+    await this.em.delete(User, {});
+    await this.em.delete(Category, {});
   }
 }

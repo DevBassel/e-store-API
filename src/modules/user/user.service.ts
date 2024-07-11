@@ -34,8 +34,9 @@ export class UserService {
   async getProfile(user: JwtPayload) {
     console.log(user);
     return new UserSerializer(
-      await this.userRepo.findOneBy({
-        id: user.id,
+      await this.userRepo.findOne({
+        where: { id: user.id },
+        relations: { reviews: { product: true } },
       }),
     );
   }

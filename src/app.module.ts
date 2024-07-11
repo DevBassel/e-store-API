@@ -10,6 +10,8 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
+import { PaymenyModule } from './modules/paymeny/paymeny.module';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { OrderModule } from './modules/order/order.module';
     CloudinaryModule,
     CartModule,
     OrderModule,
+    PaymenyModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}

@@ -1,11 +1,12 @@
 import { CartItem } from 'src/modules/cart/entities/cart-Item.entiy';
 import { Category } from 'src/modules/categories/entities/category.entity';
 import { OrderItem } from 'src/modules/order/entities/order-item.entity';
+import { Review } from 'src/modules/review/entities/review.entity';
 import {
   Column,
   Entity,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,8 +39,11 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
-  @OneToOne(() => OrderItem, (item) => item.product)
+  @OneToMany(() => OrderItem, (item) => item.product)
   orderItem: OrderItem;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
 
   @Column()
   categoryId: number;

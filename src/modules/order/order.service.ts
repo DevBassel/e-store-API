@@ -1,4 +1,10 @@
-import { GoneException, Injectable } from '@nestjs/common';
+import {
+  GoneException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtPayload } from '../auth/dto/jwt-payload';
@@ -11,6 +17,7 @@ import { OrderItem } from './entities/order-item.entity';
 @Injectable()
 export class OrderService {
   constructor(
+    @Inject(forwardRef(() => CartService))
     private readonly cartServices: CartService,
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     @InjectRepository(OrderItem)
@@ -42,17 +49,28 @@ export class OrderService {
     return createOrder;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  findAll(user: JwtPayload) {
+    return this.orderRepo.find({
+      where: { userId: user.id },
+      relations: { items: { product: true } },
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} order`;
+    return this.orderRepo.findOne({
+      where: { id },
+      relations: { items: { product: true } },
+    });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    const order = await this.findOne(id);
+    if (!order) throw new NotFoundException('oreder not found');
+
+    return this.orderRepo.save({
+      ...order,
+      ...updateOrderDto,
+    });
   }
 
   remove(id: number) {

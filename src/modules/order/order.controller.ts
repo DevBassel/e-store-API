@@ -14,7 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
-import { JwtGuard } from '../auth/strategy/guards/jwt.guard';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 
 @UseGuards(JwtGuard)
 @Controller('orders')
@@ -30,8 +30,8 @@ export class OrderController {
   }
 
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@Req() req: Request & { user: JwtPayload }) {
+    return this.orderService.findAll(req.user);
   }
 
   @Get(':id')

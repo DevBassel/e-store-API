@@ -11,4 +11,11 @@ export class DbController {
       return this.seedingService.seed(count);
     } else throw new BadRequestException('valid in dev mode');
   }
+
+  @Post('clear')
+  clear() {
+    if (process.env.NODE_ENV === 'dev') {
+      return this.seedingService.clear();
+    } else throw new BadRequestException('valid in dev mode');
+  }
 }

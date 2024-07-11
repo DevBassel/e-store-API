@@ -7,10 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { OrderStatus } from '../enums/order-status.enum';
 import { User } from 'src/modules/user/entities/user.entity';
 import { PaymentType } from '../enums/payment-type.enum';
 import { OrderItem } from './order-item.entity';
+import { PaymentStatus } from '../enums/payment-status.enum';
+import { OrderStatus } from '../enums/order-status.enum';
 
 @Entity()
 export class Order {
@@ -30,7 +31,10 @@ export class Order {
   total: number;
 
   @Column({ nullable: true })
-  paymentStatus: OrderStatus;
+  paymentStatus: PaymentStatus;
+
+  @Column({ default: OrderStatus.PENDING })
+  status: OrderStatus;
 
   @Column()
   paymentMethod: PaymentType;

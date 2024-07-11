@@ -14,7 +14,7 @@ import { CreateCartDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
-import { JwtGuard } from '../auth/strategy/guards/jwt.guard';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 
 @UseGuards(JwtGuard)
 @Controller('cart')

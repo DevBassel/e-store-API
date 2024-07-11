@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
 
@@ -20,8 +13,7 @@ export class OrderItem {
   @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
   order: Order;
 
-  @OneToOne(() => Product, (product) => product.orderItem)
-  @JoinColumn()
+  @ManyToOne(() => Product, (product) => product.orderItem)
   product: Product;
 
   @Column()
