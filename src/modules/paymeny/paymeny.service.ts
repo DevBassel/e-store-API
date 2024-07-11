@@ -5,6 +5,7 @@ import { Request } from 'express';
 import Stripe from 'stripe';
 import { OrderService } from '../order/order.service';
 import { PaymentStatus } from '../order/enums/payment-status.enum';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class PaymenyService {
@@ -12,6 +13,7 @@ export class PaymenyService {
   constructor(
     private readonly config: ConfigService,
     private readonly orderService: OrderService,
+    private readonly productService: ProductsService,
   ) {
     this.stripe = new Stripe(config.getOrThrow('STRIPE_SK'));
   }
@@ -32,6 +34,7 @@ export class PaymenyService {
   }
 
   async webHook(req: RawBodyRequest<Request>) {
+    console.log('hook');
     const sig = req.headers['stripe-signature'];
 
     let event: Stripe.Event;
@@ -50,13 +53,26 @@ export class PaymenyService {
 
     // Handle the event
     switch (event.type) {
-      case 'setup_intent.succeeded':
+      case 'payment_intent.succeeded':
         const payment = event.data.object;
         const orderId = +payment.metadata.orderId;
-        const order = await this.orderService.update(orderId, {
+
+        const successOrder = await this.orderService.update(orderId, {
           paymentStatus: PaymentStatus.DONE,
         });
-        console.log({ payment, order });
+
+        successOrder.items.forEach(async (item) => {
+          const product = await this.productService.findOne(item.productId);
+          await this.productService.update(item.productId, {
+            stock: product.stock - item.quantity,
+          });
+        });
+
+        break;
+      case 'payment_intent.canceled':
+        await this.orderService.update(orderId, {
+          paymentStatus: PaymentStatus.CANCEL,
+        });
         break;
       default:
         console.log(`Unhandled event type ${event.type}`);
