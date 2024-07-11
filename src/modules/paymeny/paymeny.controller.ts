@@ -10,8 +10,10 @@ import {
 import { PaymenyService } from './paymeny.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('paymenys')
+@ApiTags('Payment')
 export class PaymenyController {
   constructor(private readonly paymenyService: PaymenyService) {}
   @UseGuards(JwtGuard)

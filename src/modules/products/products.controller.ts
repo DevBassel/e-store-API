@@ -11,18 +11,54 @@ import {
   DefaultValuePipe,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { RoleGuard } from '../auth/guards/role.guard';
+import { Roles } from 'src/decorator/role.decorator';
+import { Role } from '../auth/enums/role.enum';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
+@ApiTags('Products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('img'))
+  @UseGuards(JwtGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+        stock: {
+          type: 'number',
+        },
+        price: {
+          type: 'number',
+        },
+        categoryId: {
+          type: 'number',
+        },
+        img: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() img: Express.Multer.File,
@@ -47,11 +83,15 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }

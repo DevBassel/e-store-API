@@ -30,7 +30,7 @@ export class BlacklistService {
 
   async isTokenBlacklisted(token: string) {
     const check = await this.blacklistRepo.findOneBy({ token });
-    console.log(check);
+    console.log({ check });
     return check ? true : false;
   }
 

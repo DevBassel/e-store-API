@@ -1,7 +1,9 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { SeedingService } from './seeding.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('seeding')
+@ApiTags('db dev mode faker ')
 export class DbController {
   constructor(private readonly seedingService: SeedingService) {}
 

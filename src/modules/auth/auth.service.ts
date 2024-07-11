@@ -22,10 +22,10 @@ export class AuthService {
   async login(userData: LoginDto) {
     const user = await this.userService.findWithEmail(userData.email);
 
-    console.log({
-      user,
-      userData,
-    });
+    // console.log({
+    //   user,
+    //   userData,
+    // });
 
     if (!user)
       throw new UnauthorizedException('email or password is wrong O_o');
@@ -48,7 +48,7 @@ export class AuthService {
 
   async logout(req: Request) {
     const token = req.headers.authorization?.split(' ')[1];
-    console.log({ token });
+    // console.log({ token });
     await this.blacklistService.create({ token });
     return { msg: 'logout success' };
   }

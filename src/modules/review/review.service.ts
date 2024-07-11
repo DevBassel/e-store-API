@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +20,7 @@ export class ReviewService {
   async create(createReviewDto: CreateReviewDto, user: JwtPayload) {
     const checkReview = await this.reviewRepo.findOneBy({
       userId: user.id,
+      productId: createReviewDto.productId,
     });
 
     if (checkReview)
@@ -30,18 +36,25 @@ export class ReviewService {
     return paginate(cq, page, limit);
   }
 
-  findOne(productId: number) {
+  async findOne(reviewId: number) {
+    const isExist = await this.reviewRepo.findOneBy({ id: reviewId });
+
+    if (!isExist) throw new NotFoundException('review not found');
     return this.reviewRepo.findOneBy({
-      productId,
+      id: reviewId,
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async update(id: number, updateReviewDto: UpdateReviewDto) {
+    const review = await this.findOne(id);
+    return this.reviewRepo.save({ ...review, ...updateReviewDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  async remove(id: number, user: JwtPayload) {
+    const review = await this.findOne(id);
+
+    if (user.id !== review.userId) throw new UnauthorizedException();
+
+    return this.reviewRepo.delete({ id });
   }
 }

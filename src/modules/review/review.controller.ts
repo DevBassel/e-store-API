@@ -18,13 +18,15 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
+import { ApiTags } from '@nestjs/swagger';
 
-@UseGuards(JwtGuard)
 @Controller('reviews')
+@ApiTags('Reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Post()
+  @UseGuards(JwtGuard)
   create(
     @Body() createReviewDto: CreateReviewDto,
     @Req() req: Request & { user: JwtPayload },
@@ -47,12 +49,14 @@ export class ReviewController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtGuard)
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewService.update(+id, updateReviewDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+  @UseGuards(JwtGuard)
+  remove(@Param('id') id: string, @Req() req: Request & { user: JwtPayload }) {
+    return this.reviewService.remove(+id, req.user);
   }
 }

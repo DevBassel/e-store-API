@@ -15,9 +15,11 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
 @Controller('cart')
+@ApiTags('Cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 

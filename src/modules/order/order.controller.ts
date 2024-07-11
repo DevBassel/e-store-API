@@ -15,9 +15,11 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtGuard)
 @Controller('orders')
+@ApiTags('Order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
