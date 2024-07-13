@@ -12,6 +12,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
 import { PaymenyModule } from './modules/paymeny/paymeny.module';
 import { ReviewModule } from './modules/review/review.module';
+import { FavouriteModule } from './modules/favourite/favourite.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewModule } from './modules/review/review.module';
     BlacklistModule,
     CloudinaryModule,
     DBModule,
+    FavouriteModule,
   ],
 })
 export class AppModule {}

@@ -1,5 +1,6 @@
 import { CartItem } from 'src/modules/cart/entities/cart-Item.entiy';
 import { Category } from 'src/modules/categories/entities/category.entity';
+import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
 import { OrderItem } from 'src/modules/order/entities/order-item.entity';
 import { Review } from 'src/modules/review/entities/review.entity';
 import {
@@ -44,6 +45,9 @@ export class Product {
 
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
+
+  @OneToMany(() => Favourite, (fav) => fav.product)
+  favourites: Favourite[];
 
   @Column()
   categoryId: number;

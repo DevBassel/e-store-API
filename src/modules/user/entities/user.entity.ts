@@ -12,6 +12,7 @@ import { Cart } from 'src/modules/cart/entities/cart.entity';
 import { Order } from 'src/modules/order/entities/order.entity';
 import { Role } from 'src/modules/auth/enums/role.enum';
 import { Review } from 'src/modules/review/entities/review.entity';
+import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -43,6 +44,9 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @OneToMany(() => Favourite, (fav) => fav.user)
+  favourites: Favourite[];
 
   @CreateDateColumn()
   joinAt: Date;
