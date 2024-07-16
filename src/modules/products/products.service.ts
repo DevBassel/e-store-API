@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate';
 import { CategoriesService } from '../categories/categories.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -36,34 +36,31 @@ export class ProductsService {
       category: string;
       min: number;
       max: number;
+      s: string;
     },
   ) {
-    if (filter.category !== 'all') {
-      return paginate(
-        this.productRepo
-          .createQueryBuilder('p')
-          .leftJoinAndSelect('p.category', 'c')
-          .where('c.name = :name', { name: filter.category })
-          .andWhere('p.price BETWEEN :min AND :max', {
-            min: filter.min,
-            max: filter.max,
-          }),
-        page,
-        limit,
+    console.log({ filter });
+
+    const Q = this.productRepo
+      .createQueryBuilder('p')
+      .andWhere('p.price BETWEEN :min AND :max', {
+        min: filter.min,
+        max: filter.max,
+      });
+
+    filter.category &&
+      Q.leftJoin('p.category', 'cat').andWhere(`cat.name = :c`, {
+        c: filter.category,
+      });
+
+    filter.s &&
+      Q.andWhere(
+        new Brackets((qb) => {
+          qb.where('LOWER(p.name) LIKE LOWER(:s)', { s: `%${filter.s}%` });
+        }),
       );
-    } else {
-      return paginate(
-        this.productRepo
-          .createQueryBuilder('p')
-          .leftJoinAndSelect('p.category', 'c')
-          .where('p.price BETWEEN :min AND :max', {
-            min: filter.min,
-            max: filter.max,
-          }),
-        page,
-        limit,
-      );
-    }
+
+    return paginate(Q, page, limit);
   }
 
   async findOne(id?: number, categoryId?: number) {
