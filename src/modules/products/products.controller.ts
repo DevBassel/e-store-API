@@ -22,6 +22,7 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from 'src/decorator/role.decorator';
 import { Role } from '../auth/enums/role.enum';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiQueryArray } from 'src/decorator/queryArray.decorator';
 
 @Controller('products')
 @ApiTags('Products')
@@ -67,6 +68,33 @@ export class ProductsController {
   }
 
   @Get()
+  @ApiQueryArray([
+    {
+      name: 'page',
+      required: true,
+    },
+    {
+      name: 'limit',
+      required: false,
+    },
+    {
+      name: 'category',
+      required: false,
+    },
+    {
+      name: 'min',
+      required: false,
+    },
+    {
+      name: 'max',
+      required: false,
+    },
+    {
+      name: 's',
+      required: false,
+      description: 'search',
+    },
+  ])
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,

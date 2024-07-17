@@ -13,6 +13,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { Repository } from 'typeorm';
 import { OrderItem } from './entities/order-item.entity';
+import { EmailService } from '../email/email.service';
+import { orederTepm } from '../email/templates/order.templet';
 
 @Injectable()
 export class OrderService {
@@ -22,6 +24,7 @@ export class OrderService {
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     @InjectRepository(OrderItem)
     private readonly orderItemRepo: Repository<OrderItem>,
+    private readonly emailServiec: EmailService,
   ) {}
   async create(createOrderDto: CreateOrderDto, user: JwtPayload) {
     const cartItems = await this.cartServices.findAll(user);
@@ -45,6 +48,12 @@ export class OrderService {
     await this.orderItemRepo.save(orderItems);
 
     await this.cartServices.clearCart(cartItems.id);
+
+    this.emailServiec.sendEmail({
+      to: user.email,
+      subject: 'Confiarm Order',
+      html: orederTepm({ products: cartItems.items as any }),
+    });
 
     return createOrder;
   }

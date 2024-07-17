@@ -19,6 +19,7 @@ import { Roles } from 'src/decorator/role.decorator';
 import { Role } from '../auth/enums/role.enum';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiQueryArray } from 'src/decorator/queryArray.decorator';
 
 @Controller('users')
 @ApiTags('User')
@@ -27,6 +28,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get()
   @Roles(Role.ADMIN)
+  @ApiQueryArray([
+    {
+      name: 'page',
+    },
+    {
+      name: 'limit',
+      required: false,
+    },
+  ])
   getAllUsers(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,

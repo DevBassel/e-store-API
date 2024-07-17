@@ -12,11 +12,14 @@ import { paginate } from 'src/utils/paginate';
 import { genSalt, hash } from 'bcrypt';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { UpdateProfileDto } from './dto/update-user.dto';
+import { EmailService } from '../email/email.service';
+import { sussessTemp } from '../email/templates/success';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    private readonly emailServie: EmailService,
   ) {}
 
   async createUser(userDate: CreateUserDto) {
@@ -28,6 +31,13 @@ export class UserService {
     const hashPassword = await hash(userDate.password, await genSalt());
 
     await this.userRepo.save({ ...userDate, password: hashPassword });
+
+    // send email to user
+    this.emailServie.sendEmail({
+      subject: 'join in platform',
+      to: userDate.email,
+      html: sussessTemp({ username: userDate.username }),
+    });
 
     return { msg: 'user has been created ^_^' };
   }
