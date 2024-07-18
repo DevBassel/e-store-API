@@ -37,17 +37,21 @@ export class OrderController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: Request & { user: JwtPayload }) {
+    return this.orderService.findOne(+id, req.user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @Req() req: Request & { user: JwtPayload },
+  ) {
+    return this.orderService.update(+id, updateOrderDto, req.user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: Request & { user: JwtPayload }) {
+    return this.orderService.cancel(+id, req.user);
   }
 }

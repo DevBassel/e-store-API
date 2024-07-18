@@ -15,6 +15,8 @@ import { Repository } from 'typeorm';
 import { OrderItem } from './entities/order-item.entity';
 import { EmailService } from '../email/email.service';
 import { orederTepm } from '../email/templates/order.templet';
+import { OrderStatus } from './enums/order-status.enum';
+import { PaymentStatus } from './enums/payment-status.enum';
 
 @Injectable()
 export class OrderService {
@@ -65,15 +67,19 @@ export class OrderService {
     });
   }
 
-  findOne(id: number) {
-    return this.orderRepo.findOne({
-      where: { id },
+  async findOne(id: number, user: JwtPayload) {
+    const order = await this.orderRepo.findOne({
+      where: { id, userId: user.id },
       relations: { items: { product: true } },
     });
+
+    if (!order) throw new NotFoundException('order not found');
+
+    return order;
   }
 
-  async update(id: number, updateOrderDto: UpdateOrderDto) {
-    const order = await this.findOne(id);
+  async update(id: number, updateOrderDto: UpdateOrderDto, user: JwtPayload) {
+    const order = await this.findOne(id, user);
     if (!order) throw new NotFoundException('oreder not found');
 
     return this.orderRepo.save({
@@ -82,7 +88,14 @@ export class OrderService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async cancel(id: number, user: JwtPayload) {
+    await this.update(
+      id,
+      {
+        paymentStatus: PaymentStatus.CANCEL,
+        status: OrderStatus.CANCEL,
+      },
+      user,
+    );
   }
 }

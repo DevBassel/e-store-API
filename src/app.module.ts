@@ -30,8 +30,8 @@ import { FavouriteModule } from './modules/favourite/favourite.module';
     ReviewModule,
     BlacklistModule,
     CloudinaryModule,
-    DBModule,
     FavouriteModule,
+    DBModule,
   ],
 })
 export class AppModule {}
