@@ -17,6 +17,8 @@ import { EmailService } from '../email/email.service';
 import { orederTepm } from '../email/templates/order.templet';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
+import { CouponsService } from '../coupons/coupons.service';
+import { paginate } from 'src/utils/paginate';
 
 @Injectable()
 export class OrderService {
@@ -27,17 +29,25 @@ export class OrderService {
     @InjectRepository(OrderItem)
     private readonly orderItemRepo: Repository<OrderItem>,
     private readonly emailServiec: EmailService,
+    private readonly couponServiec: CouponsService,
   ) {}
   async create(createOrderDto: CreateOrderDto, user: JwtPayload) {
     const cartItems = await this.cartServices.findAll(user);
 
     if (!cartItems) throw new GoneException('your cart is empty O_o !!');
 
+    const coupon = await this.couponServiec.validateCoupon(
+      createOrderDto.coupon,
+    );
+
+    console.log(coupon);
+    const total = cartItems.items.reduce((p, c) => p + c.price, 0);
     const createOrder = await this.orderRepo.save({
       ...createOrderDto,
       userId: user.id,
-      total: cartItems.items.reduce((p, c) => p + c.price, 0),
+      total: coupon ? total - coupon.discount : total,
       shipingDate: new Date().toISOString(),
+      coupon: coupon.value,
     });
 
     const orderItems = cartItems.items.map((item) => ({
@@ -60,11 +70,17 @@ export class OrderService {
     return createOrder;
   }
 
-  findAll(user: JwtPayload) {
-    return this.orderRepo.find({
-      where: { userId: user.id },
-      relations: { items: { product: true } },
-    });
+  findAll(user: JwtPayload, page: number, limit: number, status: OrderStatus) {
+    const Q = this.orderRepo
+      .createQueryBuilder('order')
+      .leftJoin('order.items', 'items')
+      .leftJoin('items.product', 'product')
+      .where('order.userId = :id', { id: user.id })
+      .select(['order', 'items', 'product']);
+
+    status && Q.andWhere('order.status = :status', { status });
+
+    return paginate(Q, page, limit);
   }
 
   async findOne(id: number, user: JwtPayload) {

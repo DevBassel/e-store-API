@@ -46,10 +46,19 @@ export class ProductsService {
       .andWhere('p.price BETWEEN :min AND :max', {
         min: filter.min,
         max: filter.max,
-      });
+      })
+      .leftJoinAndSelect('p.category', 'cat')
+      .leftJoinAndSelect('p.reviews', 'rev')
+      .leftJoinAndSelect('rev.user', 'user')
+      .loadRelationCountAndMap('p.reviewsCount', 'p.reviews')
+      .select(['p', 'cat', 'user.id', 'user.username', 'COUNT(rev.id)'])
+      .groupBy('p.id')
+      .addGroupBy('cat.id')
+      .addGroupBy('rev.id')
+      .addGroupBy('user.id');
 
     filter.category &&
-      Q.leftJoin('p.category', 'cat').andWhere(`cat.name = :c`, {
+      Q.andWhere(`cat.name = :c`, {
         c: filter.category,
       });
 
@@ -64,12 +73,26 @@ export class ProductsService {
   }
 
   async findOne(id?: number, categoryId?: number) {
-    const product = await this.productRepo.findOne({
-      where: [{ id }, { categoryId }],
-      relations: ['category'],
-    });
+    const product = this.productRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'cat')
+      .leftJoinAndSelect('p.reviews', 'rev') // get count
+      .leftJoinAndSelect('rev.user', 'user')
+      .loadRelationCountAndMap('p.reviewCount', 'p.reviews');
+
+    id && product.where('p.id = :id', { id });
+    categoryId && product.where('cat.id = :categoryId', { categoryId });
+
     if (!product) throw new NotFoundException('product not found O_o');
-    return product;
+
+    return product
+      .select(['p', 'cat', 'rev', 'user.id', 'user.username'])
+      .addSelect('COUNT(rev.id)', 'reviewCount')
+      .groupBy('p.id')
+      .addGroupBy('cat.id')
+      .addGroupBy('rev.id')
+      .addGroupBy('user.id')
+      .getOne();
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

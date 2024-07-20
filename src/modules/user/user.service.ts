@@ -34,13 +34,14 @@ export class UserService {
 
     // send email to user
     this.emailServie.sendEmail({
-      subject: 'join in platform',
+      subject: 'wellcom in platform',
       to: userDate.email,
       html: sussessTemp({ username: userDate.username }),
     });
 
     return { msg: 'user has been created ^_^' };
   }
+
   async getProfile(user: JwtPayload) {
     console.log(user);
     return new UserSerializer(

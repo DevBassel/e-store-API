@@ -10,7 +10,7 @@ import {
 import { PaymenyService } from './paymeny.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 
 @Controller('paymenys')
@@ -27,6 +27,7 @@ export class PaymenyController {
   }
 
   @Post('webhook')
+  @ApiExcludeEndpoint()
   webHook(@Req() req: RawBodyRequest<Request>) {
     return this.paymenyService.webHook(req);
   }

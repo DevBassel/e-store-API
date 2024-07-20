@@ -13,6 +13,7 @@ import { OrderModule } from './modules/order/order.module';
 import { PaymenyModule } from './modules/paymeny/paymeny.module';
 import { ReviewModule } from './modules/review/review.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
+import { CouponsModule } from './modules/coupons/coupons.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FavouriteModule } from './modules/favourite/favourite.module';
     CloudinaryModule,
     FavouriteModule,
     DBModule,
+    CouponsModule,
   ],
 })
 export class AppModule {}

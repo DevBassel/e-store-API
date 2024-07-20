@@ -31,6 +31,9 @@ export class Order {
   total: number;
 
   @Column({ nullable: true })
+  coupon: string;
+
+  @Column({ nullable: true })
   paymentStatus: PaymentStatus;
 
   @Column({ default: OrderStatus.PENDING })
