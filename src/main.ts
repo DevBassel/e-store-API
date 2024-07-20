@@ -21,6 +21,7 @@ async function bootstrap() {
     .addServer(process.env.HOST)
     .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 

@@ -54,6 +54,7 @@ export class UserController {
     @Body() updateUserDto: UpdateProfileDto,
     @Req() req: Request & { user: JwtPayload },
   ) {
+    delete updateUserDto.password;
     return this.userService.updateProfile(updateUserDto, req.user);
   }
 

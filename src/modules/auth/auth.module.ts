@@ -5,9 +5,10 @@ import { AuthService } from './auth.service';
 import { JWTStrategy } from './strategy/jwt.strategy';
 import { BlacklistModule } from '../blacklist/blacklist.module';
 import { RoleGuard } from './guards/role.guard';
+import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [UserModule, BlacklistModule],
+  imports: [UserModule, BlacklistModule, EmailModule],
   controllers: [AuthController],
   providers: [AuthService, JWTStrategy, RoleGuard],
 })

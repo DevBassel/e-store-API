@@ -42,12 +42,17 @@ export class UserService {
     return { msg: 'user has been created ^_^' };
   }
 
+  async updateUser(id: number, update: UpdateProfileDto) {
+    const user = await this.findOneUser(id);
+
+    return this.userRepo.save({ ...user, ...update });
+  }
+
   async getProfile(user: JwtPayload) {
     console.log(user);
     return new UserSerializer(
       await this.userRepo.findOne({
         where: { id: user.id },
-        relations: { reviews: { product: true } },
       }),
     );
   }
