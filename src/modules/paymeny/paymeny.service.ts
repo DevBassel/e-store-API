@@ -51,10 +51,11 @@ export class PaymenyService {
       event = this.stripe.webhooks.constructEvent(
         req.rawBody,
         sig,
-        this.config.getOrThrow('STRIPE_WEEBHOOK_SK'),
+        process.env.STRIPE_WEEBHOOK_SK,
       );
       // console.log({ event });
     } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
       console.log(err);
       return;
     }

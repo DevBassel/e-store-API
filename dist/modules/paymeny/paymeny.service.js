@@ -42,9 +42,10 @@ let PaymenyService = class PaymenyService {
         const sig = req.headers['stripe-signature'];
         let event;
         try {
-            event = this.stripe.webhooks.constructEvent(req.rawBody, sig, this.config.getOrThrow('STRIPE_WEEBHOOK_SK'));
+            event = this.stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEEBHOOK_SK);
         }
         catch (err) {
+            console.log(`⚠️  Webhook signature verification failed.`, err.message);
             console.log(err);
             return;
         }
