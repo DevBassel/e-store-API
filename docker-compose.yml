@@ -3,4 +3,22 @@ services:
   app:
     build: .
     ports:
-      - 3000:3000
+      - "3000:3000"
+    environment:
+      DB_PORT: 5432
+      DB_HOST: postgres
+      DB_NAME: e-commerce
+      DB_USERNAME: postgres
+      DB_PASSWORD: 123456
+      DB_SYNC: "true"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: e-commerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456

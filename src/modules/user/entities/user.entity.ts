@@ -2,10 +2,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Cart } from 'src/modules/cart/entities/cart.entity';
+import { Order } from 'src/modules/order/entities/order.entity';
+import { Role } from 'src/modules/auth/enums/role.enum';
+import { Review } from 'src/modules/review/entities/review.entity';
+import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -20,8 +27,26 @@ export class User {
   @Column()
   phone: string;
 
+  @Column({ nullable: true })
+  address: string;
+
   @Column()
   password: string;
+
+  @Column({ default: Role.USER })
+  role: Role;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
+
+  @OneToMany(() => Favourite, (fav) => fav.user)
+  favourites: Favourite[];
 
   @CreateDateColumn()
   joinAt: Date;

@@ -11,16 +11,32 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtGuard } from '../auth/strategy/guards/jwt.guard';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { UpdateProfileDto } from './dto/update-user.dto';
+import { Roles } from 'src/decorator/role.decorator';
+import { Role } from '../auth/enums/role.enum';
+import { RoleGuard } from '../auth/guards/role.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiQueryArray } from 'src/decorator/queryArray.decorator';
 
 @Controller('users')
-@UseGuards(JwtGuard)
+@ApiTags('User')
+@UseGuards(JwtGuard, RoleGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get()
+  @Roles(Role.ADMIN)
+  @ApiQueryArray([
+    {
+      name: 'page',
+    },
+    {
+      name: 'limit',
+      required: false,
+    },
+  ])
   getAllUsers(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
@@ -38,6 +54,7 @@ export class UserController {
     @Body() updateUserDto: UpdateProfileDto,
     @Req() req: Request & { user: JwtPayload },
   ) {
+    delete updateUserDto.password;
     return this.userService.updateProfile(updateUserDto, req.user);
   }
 

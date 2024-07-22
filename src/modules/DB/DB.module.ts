@@ -1,25 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ormConfig } from './data-source';
+import { SeedingService } from './seeding.service';
+import { DbController } from './dm.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        port: config.getOrThrow('DB_PORT'),
-        host: config.getOrThrow('DB_HOST'),
-        database: config.getOrThrow('DB_NAME'),
-        username: config.getOrThrow('DB_USERNAME'),
-        password: config.getOrThrow('DB_PASSWORD'),
+      useFactory: () => ({
+        ...ormConfig,
         autoLoadEntities: true,
-        entities: ['src/app/models/postgres/*.ts'],
-        synchronize: true,
         logger: 'file',
         logging: true,
       }),
       inject: [ConfigService],
     }),
   ],
+  controllers: [DbController],
+  providers: [SeedingService],
 })
 export class DBModule {}
