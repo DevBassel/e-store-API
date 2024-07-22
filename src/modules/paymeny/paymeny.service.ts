@@ -52,7 +52,7 @@ export class PaymenyService {
       );
       // console.log({ event });
     } catch (err) {
-      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      console.log(`Webhook signature verification failed.`, err.message);
       console.log(err);
       return;
     }
@@ -75,12 +75,14 @@ export class PaymenyService {
         );
 
         // update items stock
-        successOrder.items.forEach(async (item) => {
-          const product = await this.productService.findOne(item.productId);
-          await this.productService.update(item.productId, {
-            stock: product.stock - item.quantity,
-          });
-        });
+        await Promise.all(
+          successOrder.items.map(async (item) => {
+            const product = await this.productService.findOne(item.productId);
+            await this.productService.update(item.productId, {
+              stock: product.stock - item.quantity,
+            });
+          }),
+        );
 
         break;
       case 'payment_intent.canceled':
