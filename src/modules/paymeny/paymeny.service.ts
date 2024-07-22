@@ -49,7 +49,7 @@ export class PaymenyService {
 
     try {
       event = this.stripe.webhooks.constructEvent(
-        req.rawBody,
+        req.body,
         sig,
         process.env.STRIPE_WEEBHOOK_SK,
       );
