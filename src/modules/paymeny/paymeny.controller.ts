@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Headers,
   ParseIntPipe,
   Post,
   RawBodyRequest,
@@ -28,7 +29,10 @@ export class PaymenyController {
 
   @Post('webhook')
   @ApiExcludeEndpoint()
-  webHook(@Req() req: RawBodyRequest<Request>) {
-    return this.paymenyService.webHook(req);
+  webHook(
+    @Req() req: RawBodyRequest<Request>,
+    @Headers('stripe-signature') sig: string,
+  ) {
+    return this.paymenyService.webHook(req, sig);
   }
 }

@@ -271,5 +271,5 @@ export declare class PaymenyService {
     stripe: Stripe;
     constructor(config: ConfigService, orderService: OrderService, productService: ProductsService);
     createPayment(orderId: number, user: JwtPayload): Promise<string>;
-    webHook(req: RawBodyRequest<Request>): Promise<void>;
+    webHook(req: RawBodyRequest<Request>, sig: string): Promise<void>;
 }

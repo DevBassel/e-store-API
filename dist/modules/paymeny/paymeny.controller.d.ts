@@ -8,5 +8,5 @@ export declare class PaymenyController {
     createPayment(orderId: number, req: Request & {
         user: JwtPayload;
     }): Promise<string>;
-    webHook(req: RawBodyRequest<Request>): Promise<void>;
+    webHook(req: RawBodyRequest<Request>, sig: string): Promise<void>;
 }

@@ -25,8 +25,8 @@ let PaymenyController = class PaymenyController {
     createPayment(orderId, req) {
         return this.paymenyService.createPayment(orderId, req.user);
     }
-    webHook(req) {
-        return this.paymenyService.webHook(req);
+    webHook(req, sig) {
+        return this.paymenyService.webHook(req, sig);
     }
 };
 exports.PaymenyController = PaymenyController;
@@ -45,8 +45,9 @@ __decorate([
     (0, swagger_1.ApiExcludeEndpoint)(),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Headers)('stripe-signature')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], PaymenyController.prototype, "webHook", null);
 exports.PaymenyController = PaymenyController = __decorate([

@@ -38,8 +38,7 @@ let PaymenyService = class PaymenyService {
         });
         return intent.client_secret;
     }
-    async webHook(req) {
-        const sig = req.headers['stripe-signature'];
+    async webHook(req, sig) {
         let event;
         try {
             event = this.stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEEBHOOK_SK);

@@ -41,10 +41,7 @@ export class PaymenyService {
     return intent.client_secret;
   }
 
-  async webHook(req: RawBodyRequest<Request>) {
-    // console.log('hook');
-    const sig = req.headers['stripe-signature'];
-
+  async webHook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event;
 
     try {
