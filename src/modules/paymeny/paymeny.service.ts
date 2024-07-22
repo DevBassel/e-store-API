@@ -41,20 +41,18 @@ export class PaymenyService {
     return intent.client_secret;
   }
 
-  async webHook(req: RawBodyRequest<Request>) {
-    // console.log('hook');
-    const sig = req.headers['stripe-signature'];
-
+  async webHook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event;
 
     try {
       event = this.stripe.webhooks.constructEvent(
         req.rawBody,
         sig,
-        this.config.getOrThrow('STRIPE_WEEBHOOK_SK'),
+        process.env.STRIPE_WEEBHOOK_SK,
       );
       // console.log({ event });
     } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
       console.log(err);
       return;
     }

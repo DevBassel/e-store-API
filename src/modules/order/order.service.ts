@@ -36,9 +36,9 @@ export class OrderService {
 
     if (!cartItems) throw new GoneException('your cart is empty O_o !!');
 
-    const coupon = await this.couponServiec.validateCoupon(
-      createOrderDto.coupon,
-    );
+    const coupon =
+      createOrderDto.coupon &&
+      (await this.couponServiec.validateCoupon(createOrderDto.coupon));
 
     console.log(coupon);
     const total = cartItems.items.reduce((p, c) => p + c.price, 0);
