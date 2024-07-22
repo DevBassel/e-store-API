@@ -37,7 +37,8 @@ let OrderService = class OrderService {
         const cartItems = await this.cartServices.findAll(user);
         if (!cartItems)
             throw new common_1.GoneException('your cart is empty O_o !!');
-        const coupon = await this.couponServiec.validateCoupon(createOrderDto.coupon);
+        const coupon = createOrderDto.coupon &&
+            (await this.couponServiec.validateCoupon(createOrderDto.coupon));
         console.log(coupon);
         const total = cartItems.items.reduce((p, c) => p + c.price, 0);
         const createOrder = await this.orderRepo.save({
@@ -45,7 +46,7 @@ let OrderService = class OrderService {
             userId: user.id,
             total: coupon ? total - coupon.discount : total,
             shipingDate: new Date().toISOString(),
-            coupon: coupon.value,
+            coupon: coupon ? coupon.value : null,
         });
         const orderItems = cartItems.items.map((item) => ({
             orderId: createOrder.id,

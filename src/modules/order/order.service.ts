@@ -47,7 +47,7 @@ export class OrderService {
       userId: user.id,
       total: coupon ? total - coupon.discount : total,
       shipingDate: new Date().toISOString(),
-      coupon: coupon.value,
+      coupon: coupon ? coupon.value : null,
     });
 
     const orderItems = cartItems.items.map((item) => ({

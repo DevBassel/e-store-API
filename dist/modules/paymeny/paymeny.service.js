@@ -44,7 +44,7 @@ let PaymenyService = class PaymenyService {
             event = this.stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEEBHOOK_SK);
         }
         catch (err) {
-            console.log(`⚠️  Webhook signature verification failed.`, err.message);
+            console.log(`Webhook signature verification failed.`, err.message);
             console.log(err);
             return;
         }
@@ -57,12 +57,12 @@ let PaymenyService = class PaymenyService {
                     paymentStatus: payment_status_enum_1.PaymentStatus.DONE,
                     status: order_status_enum_1.OrderStatus.PENDING,
                 }, user);
-                successOrder.items.forEach(async (item) => {
+                await Promise.all(successOrder.items.map(async (item) => {
                     const product = await this.productService.findOne(item.productId);
                     await this.productService.update(item.productId, {
                         stock: product.stock - item.quantity,
                     });
-                });
+                }));
                 break;
             case 'payment_intent.canceled':
                 await this.orderService.update(orderId, {
