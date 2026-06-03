@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormConfig } from './data-source';
-import { SeedingService } from './seeding.service';
-import { DbController } from './dm.controller';
 
 @Module({
   imports: [
@@ -17,7 +15,5 @@ import { DbController } from './dm.controller';
       inject: [ConfigService],
     }),
   ],
-  controllers: [DbController],
-  providers: [SeedingService],
 })
 export class DBModule {}
