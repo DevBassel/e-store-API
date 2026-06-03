@@ -7,6 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import { v4 } from 'uuid';
 import { JwtManagementService } from '../jwt/jwt_managment.service';
+import { User } from '../user/entities/user.entity';
+import { JwtPayload } from './dto/jwt-payload';
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,7 +16,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly emailService: EmailService,
     private readonly jwt_manage: JwtManagementService,
-  ) {}
+  ) { }
 
   register(userData: CreateUserDto) {
     return this.userService.createUser(userData);
@@ -32,19 +34,56 @@ export class AuthService {
     if (!check)
       throw new UnauthorizedException('email or password is wrong O_o');
 
+    return this.returnUserCredential(user)
+  }
+
+  async refreshAccess(refreshToken: string) {
+    const refreshPayload = await this.jwt.verifyAsync(refreshToken)
+
+    const checkToken = await this.jwt_manage.isBlacklisted(refreshPayload.jti);
+    if (checkToken) throw new UnauthorizedException('invalid token');
+
+    if (refreshPayload.type !== 'refresh-token')
+      throw new UnauthorizedException('invalid refresh token')
+
+    const user = await this.userService.findOneUser(refreshPayload.id)
+    if (user.refreshJti !== refreshPayload.jti) {
+      throw new UnauthorizedException('invalid refresh token')
+    }
+
+    return this.returnUserCredential(user)
+  }
+
+  async logout(user: JwtPayload) {
+    await this.jwt_manage.blackListToken(user.jti);
+    await this.userService.updateUser(user.id, { refreshJti: null })
+    return { msg: 'logout success' }
+  }
+
+
+  private async returnUserCredential(user: User) {
+    const refreshJti = v4();
+    await this.userService.updateUser(user.id, { refreshJti });
+
+    const payload = {
+      username: user.username,
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    }
+
     return {
       accessToken: this.jwt.sign({
         jti: v4(),
-        username: user.username,
-        id: user.id,
-        email: user.email,
-        role: user.role,
+        type: 'access-token',
+        ...payload
+      }),
+
+      refreshToken: this.jwt.sign({
+        jti: refreshJti,
+        type: 'refresh-token',
+        ...payload
       }),
     };
-  }
-
-  async logout(jti: string) {
-    await this.jwt_manage.blackListToken(jti);
-    return { msg: 'logout success' };
   }
 }

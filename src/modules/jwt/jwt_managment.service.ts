@@ -11,8 +11,15 @@ export class JwtManagementService {
   ) {}
 
   async blackListToken(jti: string) {
-    const checkJTI = await this.jwtRepo.exists({ where: { jti } });
+    const checkJTI = await this.isBlacklisted(jti);
     if (checkJTI) throw new ConflictException('token already blacklisted');
     return this.jwtRepo.save({ jti });
+  }
+
+  async isBlacklisted(jti: string): Promise<boolean> {
+    const entry = await this.jwtRepo.exists({
+      where: { jti },
+    });
+    return !!entry;
   }
 }

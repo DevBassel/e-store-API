@@ -48,6 +48,9 @@ export class User {
   @OneToMany(() => Favourite, (fav) => fav.user)
   favourites: Favourite[];
 
+  @Column({ nullable: true })
+  refreshJti: string;
+
   @CreateDateColumn()
   joinAt: Date;
 
