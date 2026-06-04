@@ -44,8 +44,8 @@ export class ProductsService {
     const Q = this.productRepo
       .createQueryBuilder('p')
       .andWhere('p.price BETWEEN :min AND :max', {
-        min: filter.min,
-        max: filter.max,
+        min: filter.min || 0,
+        max: filter.max || 1_000_000,
       })
       .leftJoinAndSelect('p.category', 'cat')
       .leftJoinAndSelect('p.reviews', 'rev')

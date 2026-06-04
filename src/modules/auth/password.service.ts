@@ -10,6 +10,8 @@ import {
   ResetPasswordUserDto,
 } from './dto/reset-password.dto';
 import { compare, genSalt, hash } from 'bcrypt';
+import { resetUserPasswordTemp } from '../email/templates/resetPasswordTemp';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class PasswordService {
@@ -40,11 +42,9 @@ export class PasswordService {
   async resetForgotPassword(body: ResetPasswordForgotDto) {
     const payload = this.jwt.verify(body.token);
     if (!payload) throw new UnauthorizedException('Invalid token');
-    const user = await this.userService.findOneUser(payload.id);
-    const newPass = await hash(body.newPassword, await genSalt());
-    await this.userService.updateUser(user.id, { password: newPass });
 
-    return { msg: 'password has been updated' };
+    const user = await this.userService.findOneUser(payload.id);
+    return this.resetPass(body.newPassword, user);
   }
 
   async resetUserPassword(body: ResetPasswordUserDto, userid: number) {
@@ -52,10 +52,19 @@ export class PasswordService {
 
     if (!(await compare(body.password, user.password)))
       throw new UnauthorizedException('Invalid password');
+    return this.resetPass(body.newPassword, user);
+  }
 
-    const hashedPassword = await hash(body.newPassword, await genSalt());
+  async resetPass(newPassword: string, user: User) {
+    const hashedPassword = await hash(newPassword, await genSalt());
     await this.userService.updateUser(user.id, { password: hashedPassword });
 
+    // send email to user
+    this.emailService.sendEmail({
+      to: user.email,
+      subject: 'Password Changed Successfully ^_^',
+      html: resetUserPasswordTemp({ username: user.username }),
+    });
     return { msg: 'password has been updated' };
   }
 }

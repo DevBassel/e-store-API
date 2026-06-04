@@ -13,13 +13,13 @@ import { genSalt, hash } from 'bcrypt';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { UpdateProfileDto } from './dto/update-user.dto';
 import { EmailService } from '../email/email.service';
-import { sussessTemp } from '../email/templates/success';
+import { welcomeTemp } from '../email/templates/welcomeTemp';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-    private readonly emailServie: EmailService,
+    private readonly emailService: EmailService,
   ) {}
 
   async createUser(userDate: CreateUserDto) {
@@ -33,10 +33,10 @@ export class UserService {
     await this.userRepo.save({ ...userDate, password: hashPassword });
 
     // send email to user
-    this.emailServie.sendEmail({
-      subject: 'wellcom in platform',
+    this.emailService.sendEmail({
+      subject: 'Welcome to Our Platform! ^_^',
       to: userDate.email,
-      html: sussessTemp({ username: userDate.username }),
+      html: welcomeTemp({ username: userDate.username }),
     });
 
     return { msg: 'user has been created ^_^' };

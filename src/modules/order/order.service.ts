@@ -28,8 +28,8 @@ export class OrderService {
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     @InjectRepository(OrderItem)
     private readonly orderItemRepo: Repository<OrderItem>,
-    private readonly emailServiec: EmailService,
-    private readonly couponServiec: CouponsService,
+    private readonly emailService: EmailService,
+    private readonly couponService: CouponsService,
   ) {}
   async create(createOrderDto: CreateOrderDto, user: JwtPayload) {
     const cartItems = await this.cartServices.findAll(user);
@@ -38,14 +38,13 @@ export class OrderService {
 
     const coupon =
       createOrderDto.coupon &&
-      (await this.couponServiec.validateCoupon(createOrderDto.coupon));
+      (await this.couponService.validateCoupon(createOrderDto.coupon));
 
-    console.log(coupon);
     const total = cartItems.items.reduce((p, c) => p + c.price, 0);
     const createOrder = await this.orderRepo.save({
       ...createOrderDto,
       userId: user.id,
-      total: coupon ? total - coupon.discount : total,
+      total: total,
       shipingDate: new Date().toISOString(),
       coupon: coupon ? coupon.value : null,
     });
@@ -61,7 +60,7 @@ export class OrderService {
 
     await this.cartServices.clearCart(cartItems.id);
 
-    this.emailServiec.sendEmail({
+    this.emailService.sendEmail({
       to: user.email,
       subject: 'Confiarm Order',
       html: orederTepm({ products: cartItems.items as any }),

@@ -8,6 +8,7 @@ import { PaymentStatus } from '../order/enums/payment-status.enum';
 import { ProductsService } from '../products/products.service';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 import { OrderStatus } from '../order/enums/order-status.enum';
+import { CouponsService } from '../coupons/coupons.service';
 
 @Injectable()
 export class PaymenyService {
@@ -16,6 +17,7 @@ export class PaymenyService {
     private readonly config: ConfigService,
     private readonly orderService: OrderService,
     private readonly productService: ProductsService,
+    private readonly couponService: CouponsService,
   ) {
     this.stripe = new Stripe(config.getOrThrow('STRIPE_SK'));
   }
@@ -26,11 +28,20 @@ export class PaymenyService {
     if (order.paymentStatus === PaymentStatus.DONE)
       throw new ConflictException('order has been paid');
 
-    // console.log(order);
+    const coupon = await this.couponService.validateCoupon(order.coupon);
+    const price = coupon
+      ? order.total - (order.total * coupon.discount) / 100
+      : order.total;
 
+    // console.log(order);
+    console.log({
+      coupon,
+      price,
+      order,
+    });
     // create payment
     const intent = await this.stripe.paymentIntents.create({
-      amount: order.total * 100, // 100 == 1$
+      amount: price * 100, // 100 == 1$
       currency: 'USD',
       metadata: {
         orderId: orderId,

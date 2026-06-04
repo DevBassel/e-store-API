@@ -14,7 +14,6 @@ export class CloudinaryService {
         opts,
         (error, result) => {
           if (error) return reject(error);
-          // console.log(result);
           resolve(result);
         },
       );
