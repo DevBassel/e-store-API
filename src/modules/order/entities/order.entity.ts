@@ -36,6 +36,9 @@ export class Order {
   @Column({ nullable: true })
   paymentStatus: PaymentStatus;
 
+  @Column({ nullable: true })
+  paymentIntentId: string;
+
   @Column({ default: OrderStatus.PENDING })
   status: OrderStatus;
 
@@ -47,9 +50,6 @@ export class Order {
 
   @Column({ nullable: true })
   shipingDate: Date;
-
-  @Column()
-  trackingNumber: string;
 
   @Column()
   note: string;

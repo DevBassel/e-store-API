@@ -41,7 +41,7 @@ export class PaymenyService {
     });
     // create payment
     const intent = await this.stripe.paymentIntents.create({
-      amount: price * 100, // 100 == 1$
+      amount: Math.round(price * 100), // Stripe requires amount in cents as an integer
       currency: 'USD',
       metadata: {
         orderId: orderId,
@@ -54,7 +54,7 @@ export class PaymenyService {
 
   async webHook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event;
-
+    console.log('hook');
     try {
       event = this.stripe.webhooks.constructEvent(
         req.rawBody,
@@ -68,19 +68,25 @@ export class PaymenyService {
       return;
     }
 
+    const payment = event.data.object as Stripe.PaymentIntent;
+    const orderId = +payment.metadata.orderId;
+    const user = JSON.parse(payment.metadata.user);
     // Handle the event
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        const payment = event.data.object;
-        const orderId = +payment.metadata.orderId;
-        const user = JSON.parse(payment.metadata.user);
 
+    console.log(payment.id);
+    switch (event.type) {
+      case 'payment_intent.created':
+        console.log('create');
+        break;
+      case 'payment_intent.succeeded':
+        console.log('success');
         // update order if success
         const successOrder = await this.orderService.update(
           orderId,
           {
             paymentStatus: PaymentStatus.DONE,
-            status: OrderStatus.PENDING,
+            status: OrderStatus.SHIPING,
+            paymentIntentId: payment.id,
           },
           user,
         );
@@ -103,10 +109,25 @@ export class PaymenyService {
           {
             paymentStatus: PaymentStatus.CANCEL,
             status: OrderStatus.CANCEL,
+            paymentIntentId: payment.id,
           },
           user,
         );
         break;
+      case 'payment_intent.payment_failed':
+        console.log('failed');
+
+        await this.orderService.update(
+          orderId,
+          {
+            paymentStatus: PaymentStatus.FAILED,
+            status: OrderStatus.PENDING,
+            paymentIntentId: payment.id,
+          },
+          user,
+        );
+        break;
+
       default:
         console.log(`Unhandled event type ${event.type}`);
     }

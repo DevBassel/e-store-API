@@ -14,7 +14,7 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { JwtPayload } from '../auth/dto/jwt-payload';
 
-@Controller('paymenys')
+@Controller('payments')
 @ApiTags('Payment')
 export class PaymenyController {
   constructor(private readonly paymenyService: PaymenyService) {}

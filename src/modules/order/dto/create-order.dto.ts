@@ -9,9 +9,6 @@ export class CreateOrderDto {
   shippingAddress: string;
 
   @IsString()
-  trackingNumber: string;
-
-  @IsString()
   note: string;
 
   @IsString()

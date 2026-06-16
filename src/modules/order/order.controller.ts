@@ -47,6 +47,7 @@ export class OrderController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request & { user: JwtPayload }) {
+    if (id === 'me') return this.orderService.getUserOrders(req.user.id);
     return this.orderService.findOne(+id, req.user);
   }
 

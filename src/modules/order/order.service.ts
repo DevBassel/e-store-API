@@ -45,7 +45,7 @@ export class OrderService {
       ...createOrderDto,
       userId: user.id,
       total: total,
-      shipingDate: new Date().toISOString(),
+      shipingDate: null,
       coupon: coupon ? coupon.value : null,
     });
 
@@ -93,6 +93,14 @@ export class OrderService {
     return order;
   }
 
+  async getUserOrders(userId: number) {
+    const order = await this.orderRepo.find({
+      where: { userId },
+      relations: { items: { product: true } },
+    });
+
+    return order;
+  }
   async update(id: number, updateOrderDto: UpdateOrderDto, user: JwtPayload) {
     const order = await this.findOne(id, user);
     if (!order) throw new NotFoundException('oreder not found');

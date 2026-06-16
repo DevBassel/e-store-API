@@ -48,6 +48,7 @@ export class User {
   @OneToMany(() => Favourite, (fav) => fav.user)
   favourites: Favourite[];
 
+  @Exclude()
   @Column({ nullable: true })
   refreshJti: string;
 

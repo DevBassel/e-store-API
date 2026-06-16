@@ -29,6 +29,11 @@ export class CartService {
     if (!product && product.stock < createCartDto.quantity)
       throw new BadRequestException('product is out of stock');
 
+    if (product.stock < createCartDto.quantity)
+      throw new BadRequestException(
+        'quantity should be less than  product stock stock',
+      );
+
     let cart = await this.cartRepo.findOneBy({ userId: user.id });
     if (!cart) cart = await this.cartRepo.save({ userId: user.id });
 
