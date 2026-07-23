@@ -102,18 +102,24 @@ export class ProductsController {
     @Query('min', new DefaultValuePipe(0)) min: number,
     @Query('max', new DefaultValuePipe(1_000_000)) max: number,
     @Query('s') s: string,
+    @Query('u') userId: number,
   ) {
-    return this.productsService.findAll(page, limit, {
-      category,
-      max,
-      min,
-      s,
-    });
+    return this.productsService.findAll(
+      page,
+      limit,
+      {
+        category,
+        max,
+        min,
+        s,
+      },
+      userId,
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+  findOne(@Param('id') id: string, @Query('u') userId: number) {
+    return this.productsService.findOne(+id, undefined, userId);
   }
 
   @Patch(':id')

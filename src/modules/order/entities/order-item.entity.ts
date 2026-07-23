@@ -23,7 +23,4 @@ export class OrderItem {
 
   @Column()
   quantity: number;
-
-  @Column()
-  price_at_buy: number;
 }

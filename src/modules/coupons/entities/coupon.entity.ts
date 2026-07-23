@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Order } from 'src/modules/order/entities/order.entity';
 
 @Entity()
 export class Coupon {
@@ -23,6 +25,9 @@ export class Coupon {
 
   @Column()
   validate: number;
+
+  @OneToMany(() => Order, (order) => order.coupon, { onDelete: 'SET NULL' })
+  orders: Order[];
 
   @CreateDateColumn()
   createAt: Date;

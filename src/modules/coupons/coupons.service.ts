@@ -31,7 +31,7 @@ export class CouponsService {
   }
 
   async findOne(value: string) {
-    const coupon = await this.couponRepo.findOneBy({ value });
+    const coupon = await this.couponRepo.findOne({ where: { value } });
 
     if (!coupon) throw new NotFoundException('coupon not found');
 
@@ -40,13 +40,14 @@ export class CouponsService {
 
   async validateCoupon(value: string) {
     const coupon = await this.findOne(value);
+
     const creatTime = new Date(coupon.createAt).getTime();
     const calcEnd = creatTime + coupon.validate * 1000 * 60 * 60 * 24;
-    const isacrtive = calcEnd > creatTime;
+    const isActive = calcEnd > Date.now();
 
-    console.log({ creatTime, calcEnd, isacrtive });
+    console.log({ creatTime, calcEnd, isActive });
 
-    if (!isacrtive) throw new BadRequestException('not valid coupon');
+    if (!isActive) throw new BadRequestException('not valid coupon');
 
     return coupon;
   }

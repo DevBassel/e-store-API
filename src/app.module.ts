@@ -9,10 +9,10 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
-import { PaymenyModule } from './modules/paymeny/paymeny.module';
 import { ReviewModule } from './modules/review/review.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
 import { CouponsModule } from './modules/coupons/coupons.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { CouponsModule } from './modules/coupons/coupons.module';
     CategoriesModule,
     CartModule,
     OrderModule,
-    PaymenyModule,
+    PaymentModule,
     ReviewModule,
     CloudinaryModule,
     FavouriteModule,

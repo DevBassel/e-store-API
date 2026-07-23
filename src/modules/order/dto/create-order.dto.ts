@@ -14,5 +14,5 @@ export class CreateOrderDto {
   @IsString()
   @Length(6)
   @IsOptional()
-  coupon: string;
+  couponId: number;
 }

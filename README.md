@@ -25,43 +25,43 @@ A robust, scalable RESTful API for a full-featured e-commerce platform, built wi
 
 ## ✨ Features
 
-| Feature | Description |
-|---|---|
-| 🔐 **Authentication** | Register, login, logout, and token refresh with JWT + Passport.js |
-| 🔑 **Password Management** | Forgot password, reset via email OTP, and authenticated password change |
-| 👥 **User Management** | Profile view/update, admin user listing, role-based access (User, Manager, Admin) |
-| 📦 **Products** | Full CRUD with image upload (Cloudinary), pagination, filtering by category/price/search |
-| 🗂️ **Categories** | Create, list, update, and delete product categories |
-| 🛒 **Cart** | Add/remove/update items, view cart — all scoped to the authenticated user |
-| 📋 **Orders** | Place orders from cart, view order history, filter by status, cancel orders |
-| 💳 **Stripe Payments** | Create payment intents for orders, Stripe webhook for payment confirmation |
-| ⭐ **Reviews** | Create, read, update, and delete product reviews with pagination |
-| ❤️ **Favourites** | Add/remove products to a personal wishlist |
-| 🎟️ **Coupons** | Admin-managed discount coupons with CRUD operations |
-| 📧 **Email Service** | Transactional emails (password reset) via Nodemailer |
-| ☁️ **Image Hosting** | Cloudinary integration for product image upload and CDN delivery |
-| 📖 **API Docs** | Auto-generated interactive Swagger/OpenAPI documentation |
-| ✅ **Validation** | Request body validation with class-validator and DTO whitelisting |
-| 🐳 **Docker** | Dockerfile and docker-compose for containerized deployment with PostgreSQL |
+| Feature                    | Description                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------- |
+| 🔐 **Authentication**      | Register, login, logout, and token refresh with JWT + Passport.js                        |
+| 🔑 **Password Management** | Forgot password, reset via email OTP, and authenticated password change                  |
+| 👥 **User Management**     | Profile view/update, admin user listing, role-based access (User, Manager, Admin)        |
+| 📦 **Products**            | Full CRUD with image upload (Cloudinary), pagination, filtering by category/price/search |
+| 🗂️ **Categories**          | Create, list, update, and delete product categories                                      |
+| 🛒 **Cart**                | Add/remove/update items, view cart — all scoped to the authenticated user                |
+| 📋 **Orders**              | Place orders from cart, view order history, filter by status, cancel orders              |
+| 💳 **Stripe Payments**     | Create payment intents for orders, Stripe webhook for payment confirmation               |
+| ⭐ **Reviews**             | Create, read, update, and delete product reviews with pagination                         |
+| ❤️ **Favourites**          | Add/remove products to a personal wishlist                                               |
+| 🎟️ **Coupons**             | Admin-managed discount coupons with CRUD operations                                      |
+| 📧 **Email Service**       | Transactional emails (password reset) via Nodemailer                                     |
+| ☁️ **Image Hosting**       | Cloudinary integration for product image upload and CDN delivery                         |
+| 📖 **API Docs**            | Auto-generated interactive Swagger/OpenAPI documentation                                 |
+| ✅ **Validation**          | Request body validation with class-validator and DTO whitelisting                        |
+| 🐳 **Docker**              | Dockerfile and docker-compose for containerized deployment with PostgreSQL               |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology | Version | Purpose |
-|---|---|---|
-| [NestJS](https://nestjs.com/) | 10.x | Progressive Node.js framework |
-| [TypeORM](https://typeorm.io/) | 0.3.x | ORM for PostgreSQL |
-| [PostgreSQL](https://www.postgresql.org/) | Latest | Relational database |
-| [Passport.js](http://www.passportjs.org/) | — | Authentication middleware |
-| [JWT](https://jwt.io/) | — | Token-based auth (access + refresh tokens) |
-| [Swagger/OpenAPI](https://swagger.io/) | 7.x | Interactive API documentation |
-| [Stripe](https://stripe.com/) | 16.x | Payment processing + webhooks |
-| [Cloudinary](https://cloudinary.com/) | 2.x | Image upload and CDN |
-| [Nodemailer](https://nodemailer.com/) | 6.x | Email delivery |
-| [class-validator](https://github.com/typestack/class-validator) | 0.14.x | DTO validation |
-| [bcrypt](https://github.com/kelektiv/node.bcrypt.js) | 5.x | Password hashing |
-| [Docker](https://www.docker.com/) | — | Containerization |
+| Technology                                                      | Version | Purpose                                    |
+| --------------------------------------------------------------- | ------- | ------------------------------------------ |
+| [NestJS](https://nestjs.com/)                                   | 10.x    | Progressive Node.js framework              |
+| [TypeORM](https://typeorm.io/)                                  | 0.3.x   | ORM for PostgreSQL                         |
+| [PostgreSQL](https://www.postgresql.org/)                       | Latest  | Relational database                        |
+| [Passport.js](http://www.passportjs.org/)                       | —       | Authentication middleware                  |
+| [JWT](https://jwt.io/)                                          | —       | Token-based auth (access + refresh tokens) |
+| [Swagger/OpenAPI](https://swagger.io/)                          | 7.x     | Interactive API documentation              |
+| [Stripe](https://stripe.com/)                                   | 16.x    | Payment processing + webhooks              |
+| [Cloudinary](https://cloudinary.com/)                           | 2.x     | Image upload and CDN                       |
+| [Nodemailer](https://nodemailer.com/)                           | 6.x     | Email delivery                             |
+| [class-validator](https://github.com/typestack/class-validator) | 0.14.x  | DTO validation                             |
+| [bcrypt](https://github.com/kelektiv/node.bcrypt.js)            | 5.x     | Password hashing                           |
+| [Docker](https://www.docker.com/)                               | —       | Containerization                           |
 
 ---
 
@@ -167,10 +167,10 @@ backend/
 │       │   └── enums/
 │       │       └── order-status.enum.ts # inProcess | shipped | cancel | success
 │       │
-│       ├── paymeny/                     # Stripe payment integration
-│       │   ├── paymeny.controller.ts    # POST /payments/create, /payments/webhook
-│       │   ├── paymeny.service.ts       # Stripe payment intent creation + webhook handler
-│       │   └── paymeny.module.ts
+│       ├── payment/                     # Stripe payment integration
+│       │   ├── payment.controller.ts    # POST /payments/create, /payments/webhook
+│       │   ├── payment.service.ts       # Stripe payment intent creation + webhook handler
+│       │   └── payment.module.ts
 │       │
 │       ├── review/                      # Product reviews
 │       │   ├── review.controller.ts     # CRUD + paginated listing per product
@@ -301,39 +301,39 @@ All endpoints are prefixed with `/api/v1`. Interactive documentation is availabl
 
 ### Auth (`/api/v1/auth`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/auth/register` | ❌ | Register a new user |
-| `POST` | `/auth/login` | ❌ | Login and receive JWT tokens |
-| `POST` | `/auth/refresh` | ❌ | Refresh access token |
-| `POST` | `/auth/log-out` | 🔒 | Logout (invalidate refresh token) |
+| Method | Endpoint         | Auth | Description                       |
+| ------ | ---------------- | ---- | --------------------------------- |
+| `POST` | `/auth/register` | ❌   | Register a new user               |
+| `POST` | `/auth/login`    | ❌   | Login and receive JWT tokens      |
+| `POST` | `/auth/refresh`  | ❌   | Refresh access token              |
+| `POST` | `/auth/log-out`  | 🔒   | Logout (invalidate refresh token) |
 
 ### Password Management (`/api/v1/auth`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/auth/forgot-password` | ❌ | Send password reset email |
-| `POST` | `/auth/reset-forgot-password` | ❌ | Reset password via email token |
-| `POST` | `/auth/reset-password` | 🔒 | Change password (authenticated) |
+| Method | Endpoint                      | Auth | Description                     |
+| ------ | ----------------------------- | ---- | ------------------------------- |
+| `POST` | `/auth/forgot-password`       | ❌   | Send password reset email       |
+| `POST` | `/auth/reset-forgot-password` | ❌   | Reset password via email token  |
+| `POST` | `/auth/reset-password`        | 🔒   | Change password (authenticated) |
 
 ### Users (`/api/v1/users`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/users` | 🔒 Admin | List all users (paginated) |
-| `GET` | `/users/profile` | 🔒 | Get authenticated user's profile |
-| `PATCH` | `/users/profile` | 🔒 | Update profile |
-| `GET` | `/users/find/:userId` | 🔒 | Find a user by ID |
+| Method  | Endpoint              | Auth     | Description                      |
+| ------- | --------------------- | -------- | -------------------------------- |
+| `GET`   | `/users`              | 🔒 Admin | List all users (paginated)       |
+| `GET`   | `/users/profile`      | 🔒       | Get authenticated user's profile |
+| `PATCH` | `/users/profile`      | 🔒       | Update profile                   |
+| `GET`   | `/users/find/:userId` | 🔒       | Find a user by ID                |
 
 ### Products (`/api/v1/products`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/products` | 🔒 Admin/Manager | Create product (multipart/form-data with image) |
-| `GET` | `/products` | ❌ | List products (paginated, filterable) |
-| `GET` | `/products/:id` | ❌ | Get product details |
-| `PATCH` | `/products/:id` | 🔒 | Update product |
-| `DELETE` | `/products/:id` | 🔒 Admin/Manager | Delete product |
+| Method   | Endpoint        | Auth             | Description                                     |
+| -------- | --------------- | ---------------- | ----------------------------------------------- |
+| `POST`   | `/products`     | 🔒 Admin/Manager | Create product (multipart/form-data with image) |
+| `GET`    | `/products`     | ❌               | List products (paginated, filterable)           |
+| `GET`    | `/products/:id` | ❌               | Get product details                             |
+| `PATCH`  | `/products/:id` | 🔒               | Update product                                  |
+| `DELETE` | `/products/:id` | 🔒 Admin/Manager | Delete product                                  |
 
 **Query Parameters** for `GET /products`:
 | Param | Type | Default | Description |
@@ -347,72 +347,72 @@ All endpoints are prefixed with `/api/v1`. Interactive documentation is availabl
 
 ### Categories (`/api/v1/categories`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/categories` | ❌ | Create a category |
-| `GET` | `/categories` | ❌ | List all categories |
-| `GET` | `/categories/:id` | ❌ | Get category by ID |
-| `PATCH` | `/categories/:id` | ❌ | Update category |
-| `DELETE` | `/categories/:id` | ❌ | Delete category |
+| Method   | Endpoint          | Auth | Description         |
+| -------- | ----------------- | ---- | ------------------- |
+| `POST`   | `/categories`     | ❌   | Create a category   |
+| `GET`    | `/categories`     | ❌   | List all categories |
+| `GET`    | `/categories/:id` | ❌   | Get category by ID  |
+| `PATCH`  | `/categories/:id` | ❌   | Update category     |
+| `DELETE` | `/categories/:id` | ❌   | Delete category     |
 
 ### Cart (`/api/v1/cart`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/cart` | 🔒 | Add item to cart |
-| `GET` | `/cart` | 🔒 | Get user's cart |
-| `GET` | `/cart/:id` | 🔒 | Get specific cart item |
-| `PATCH` | `/cart/:id` | 🔒 | Update cart item quantity |
-| `DELETE` | `/cart/:id` | 🔒 | Remove item from cart |
+| Method   | Endpoint    | Auth | Description               |
+| -------- | ----------- | ---- | ------------------------- |
+| `POST`   | `/cart`     | 🔒   | Add item to cart          |
+| `GET`    | `/cart`     | 🔒   | Get user's cart           |
+| `GET`    | `/cart/:id` | 🔒   | Get specific cart item    |
+| `PATCH`  | `/cart/:id` | 🔒   | Update cart item quantity |
+| `DELETE` | `/cart/:id` | 🔒   | Remove item from cart     |
 
 ### Orders (`/api/v1/orders`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/orders` | 🔒 | Create order from cart |
-| `GET` | `/orders` | 🔒 | List orders (paginated, status filter) |
-| `GET` | `/orders/:id` | 🔒 | Get order details |
-| `GET` | `/orders/me` | 🔒 | Get current user's orders |
-| `PATCH` | `/orders/:id` | 🔒 | Update order |
-| `DELETE` | `/orders/:id` | 🔒 | Cancel order |
+| Method   | Endpoint      | Auth | Description                            |
+| -------- | ------------- | ---- | -------------------------------------- |
+| `POST`   | `/orders`     | 🔒   | Create order from cart                 |
+| `GET`    | `/orders`     | 🔒   | List orders (paginated, status filter) |
+| `GET`    | `/orders/:id` | 🔒   | Get order details                      |
+| `GET`    | `/orders/me`  | 🔒   | Get current user's orders              |
+| `PATCH`  | `/orders/:id` | 🔒   | Update order                           |
+| `DELETE` | `/orders/:id` | 🔒   | Cancel order                           |
 
 **Order Statuses**: `inProcess` → `shipped` → `success` | `cancel`
 
 ### Payments (`/api/v1/payments`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/payments/create` | 🔒 | Create Stripe payment intent for an order |
-| `POST` | `/payments/webhook` | — | Stripe webhook endpoint (signature verified) |
+| Method | Endpoint            | Auth | Description                                  |
+| ------ | ------------------- | ---- | -------------------------------------------- |
+| `POST` | `/payments/create`  | 🔒   | Create Stripe payment intent for an order    |
+| `POST` | `/payments/webhook` | —    | Stripe webhook endpoint (signature verified) |
 
 ### Reviews (`/api/v1/reviews`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/reviews` | 🔒 | Create a review |
-| `GET` | `/reviews/:productId` | ❌ | List reviews for a product (paginated) |
-| `GET` | `/reviews/:id/view` | ❌ | Get single review |
-| `PATCH` | `/reviews/:id` | 🔒 | Update a review |
-| `DELETE` | `/reviews/:id` | 🔒 | Delete a review |
+| Method   | Endpoint              | Auth | Description                            |
+| -------- | --------------------- | ---- | -------------------------------------- |
+| `POST`   | `/reviews`            | 🔒   | Create a review                        |
+| `GET`    | `/reviews/:productId` | ❌   | List reviews for a product (paginated) |
+| `GET`    | `/reviews/:id/view`   | ❌   | Get single review                      |
+| `PATCH`  | `/reviews/:id`        | 🔒   | Update a review                        |
+| `DELETE` | `/reviews/:id`        | 🔒   | Delete a review                        |
 
 ### Favourites (`/api/v1/favourite`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/favourite` | 🔒 | Add product to favourites |
-| `GET` | `/favourite` | 🔒 | List user's favourites |
-| `GET` | `/favourite/:id` | 🔒 | Get specific favourite |
-| `DELETE` | `/favourite/:id` | 🔒 | Remove from favourites |
+| Method   | Endpoint         | Auth | Description               |
+| -------- | ---------------- | ---- | ------------------------- |
+| `POST`   | `/favourite`     | 🔒   | Add product to favourites |
+| `GET`    | `/favourite`     | 🔒   | List user's favourites    |
+| `GET`    | `/favourite/:id` | 🔒   | Get specific favourite    |
+| `DELETE` | `/favourite/:id` | 🔒   | Remove from favourites    |
 
 ### Coupons (`/api/v1/coupons`)
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/coupons` | 🔒 Admin | Create coupon |
-| `GET` | `/coupons` | 🔒 Admin | List coupons (paginated) |
-| `GET` | `/coupons/:id` | 🔒 Admin | Get coupon details |
-| `PATCH` | `/coupons/:id` | 🔒 Admin | Update coupon |
-| `DELETE` | `/coupons/:id` | 🔒 Admin | Delete coupon |
+| Method   | Endpoint       | Auth     | Description              |
+| -------- | -------------- | -------- | ------------------------ |
+| `POST`   | `/coupons`     | 🔒 Admin | Create coupon            |
+| `GET`    | `/coupons`     | 🔒 Admin | List coupons (paginated) |
+| `GET`    | `/coupons/:id` | 🔒 Admin | Get coupon details       |
+| `PATCH`  | `/coupons/:id` | 🔒 Admin | Update coupon            |
+| `DELETE` | `/coupons/:id` | 🔒 Admin | Delete coupon            |
 
 ---
 
@@ -420,13 +420,14 @@ All endpoints are prefixed with `/api/v1`. Interactive documentation is availabl
 
 The API uses a role-based access control (RBAC) system with three roles:
 
-| Role | Value | Permissions |
-|---|---|---|
-| **User** | `user` | Default role. Can manage own cart, orders, reviews, favourites, and profile |
-| **Manager** | `manager` | Can create, update, and delete products |
-| **Admin** | `admin` | Full access — user management, product management, coupon management |
+| Role        | Value     | Permissions                                                                 |
+| ----------- | --------- | --------------------------------------------------------------------------- |
+| **User**    | `user`    | Default role. Can manage own cart, orders, reviews, favourites, and profile |
+| **Manager** | `manager` | Can create, update, and delete products                                     |
+| **Admin**   | `admin`   | Full access — user management, product management, coupon management        |
 
 **Guards applied**:
+
 - `JwtGuard` — Validates the Bearer JWT token from the `Authorization` header
 - `RoleGuard` — Checks the user's role against the `@Roles()` decorator on the endpoint
 
@@ -508,21 +509,21 @@ pnpm run test:debug
 
 ## 📜 Scripts
 
-| Script | Command | Description |
-|---|---|---|
-| `start:dev` | `pnpm run start:dev` | Development server with hot-reload |
-| `start:prod` | `pnpm run start:prod` | Production server (compiled JS) |
-| `build` | `pnpm run build` | Compile TypeScript via NestJS CLI |
-| `seeding` | `pnpm run seeding` | Seed database with sample data |
-| `migration:generate` | `pnpm run migration:generate` | Generate new migration |
-| `migration:run` | `pnpm run migration:run` | Execute pending migrations |
-| `migration:revert` | `pnpm run migration:revert` | Revert last migration |
-| `webhook` | `pnpm run webhook` | Forward Stripe webhooks locally |
-| `test` | `pnpm run test` | Run unit tests |
-| `test:e2e` | `pnpm run test:e2e` | Run end-to-end tests |
-| `test:cov` | `pnpm run test:cov` | Generate coverage report |
-| `lint` | `pnpm run lint` | Lint and auto-fix with ESLint |
-| `format` | `pnpm run format` | Format code with Prettier |
+| Script               | Command                       | Description                        |
+| -------------------- | ----------------------------- | ---------------------------------- |
+| `start:dev`          | `pnpm run start:dev`          | Development server with hot-reload |
+| `start:prod`         | `pnpm run start:prod`         | Production server (compiled JS)    |
+| `build`              | `pnpm run build`              | Compile TypeScript via NestJS CLI  |
+| `seeding`            | `pnpm run seeding`            | Seed database with sample data     |
+| `migration:generate` | `pnpm run migration:generate` | Generate new migration             |
+| `migration:run`      | `pnpm run migration:run`      | Execute pending migrations         |
+| `migration:revert`   | `pnpm run migration:revert`   | Revert last migration              |
+| `webhook`            | `pnpm run webhook`            | Forward Stripe webhooks locally    |
+| `test`               | `pnpm run test`               | Run unit tests                     |
+| `test:e2e`           | `pnpm run test:e2e`           | Run end-to-end tests               |
+| `test:cov`           | `pnpm run test:cov`           | Generate coverage report           |
+| `lint`               | `pnpm run lint`               | Lint and auto-fix with ESLint      |
+| `format`             | `pnpm run format`             | Format code with Prettier          |
 
 ---
 

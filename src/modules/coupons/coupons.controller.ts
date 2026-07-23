@@ -57,6 +57,10 @@ export class CouponsController {
   findOne(@Param('id') id: string) {
     return this.couponsService.findOne(id);
   }
+  @Post('validate')
+  validateCoupon(@Body() data: { code: string }) {
+    return this.couponsService.validateCoupon(data.code);
+  }
 
   @Patch(':id')
   @Roles(Role.ADMIN)

@@ -10,7 +10,7 @@ import { JwtPayload } from './dto/jwt-payload';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   register(@Body() userData: CreateUserDto) {

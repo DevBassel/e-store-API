@@ -11,7 +11,7 @@ import { OrderModule } from '../order/order.module';
   imports: [
     TypeOrmModule.forFeature([Cart, CartItem]),
     ProductsModule,
-    OrderModule,
+    forwardRef(() => OrderModule),
   ],
   controllers: [CartController],
   providers: [CartService],

@@ -2,29 +2,29 @@ import {
   Body,
   Controller,
   Headers,
-  ParseIntPipe,
   Post,
   RawBodyRequest,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PaymenyService } from './paymeny.service';
+import { PaymentService } from './payment.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { JwtPayload } from '../auth/dto/jwt-payload';
+import { CreatePaymentDto } from './dto/createPayment.dto';
 
 @Controller('payments')
 @ApiTags('Payment')
-export class PaymenyController {
-  constructor(private readonly paymenyService: PaymenyService) {}
+export class PaymentController {
+  constructor(private readonly paymenyService: PaymentService) {}
   @UseGuards(JwtGuard)
   @Post('create')
   createPayment(
-    @Body('orderId', ParseIntPipe) orderId: number,
+    @Body() dto: CreatePaymentDto,
     @Req() req: Request & { user: JwtPayload },
   ) {
-    return this.paymenyService.createPayment(orderId, req.user);
+    return this.paymenyService.createPayment(dto, req.user);
   }
 
   @Post('webhook')

@@ -16,7 +16,7 @@ export class CartItem {
   @Column()
   productId: number;
 
-  @ManyToOne(() => Product, (product) => product.cartItem, {
+  @ManyToOne(() => Product, {
     onDelete: 'CASCADE',
   })
   product: Product;

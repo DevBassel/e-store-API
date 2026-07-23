@@ -7,7 +7,7 @@ import { Brackets, Repository } from 'typeorm';
 import { paginate } from 'src/utils/paginate';
 import { CategoriesService } from '../categories/categories.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-
+import { SelectQueryBuilder } from 'typeorm';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -29,7 +29,7 @@ export class ProductsService {
     return this.productRepo.save({ ...createProductDto, img: upload.url });
   }
 
-  findAll(
+  async findAll(
     page: number,
     limit: number,
     filter: {
@@ -38,6 +38,7 @@ export class ProductsService {
       max: number;
       s: string;
     },
+    userId?: number,
   ) {
     console.log({ filter });
 
@@ -69,32 +70,28 @@ export class ProductsService {
         }),
       );
 
-    return paginate(Q, page, limit);
+    return userId
+      ? this.getProductsWithIsFav(Q, userId, page, limit)
+      : paginate(Q, page, limit);
   }
 
-  async findOne(id?: number, categoryId?: number) {
-    const product = this.productRepo
+  async findOne(id?: number, categoryId?: number, userId?: number) {
+    const Q = this.productRepo
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.category', 'cat')
-      .leftJoinAndSelect('p.reviews', 'rev') // get count
+      .leftJoinAndSelect('p.reviews', 'rev')
       .leftJoinAndSelect('rev.user', 'user')
-      .loadRelationCountAndMap('p.reviewCount', 'p.reviews');
-
-    id && product.where('p.id = :id', { id });
-    categoryId && product.where('cat.id = :categoryId', { categoryId });
-
-    if (!product) throw new NotFoundException('product not found O_o');
-
-    return product
-      .select(['p', 'cat', 'rev', 'user.id', 'user.username'])
-      .addSelect('COUNT(rev.id)', 'reviewCount')
       .groupBy('p.id')
       .addGroupBy('cat.id')
       .addGroupBy('rev.id')
       .addGroupBy('user.id')
-      .getOne();
-  }
+      .select(['p', 'cat', 'rev', 'user.id', 'user.username']);
 
+    if (id) Q.andWhere('p.id = :id', { id });
+    if (categoryId) Q.andWhere('cat.id = :categoryId', { categoryId });
+
+    return userId ? this.getProductWithIsFav(Q, userId) : Q.getOne();
+  }
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.findOne(id);
     const cat = await this.categoryService.findOne(updateProductDto.categoryId);
@@ -111,5 +108,54 @@ export class ProductsService {
 
   remove(id: number) {
     return this.productRepo.delete({ id });
+  }
+
+  private async getProductsWithIsFav(
+    Q: SelectQueryBuilder<Product>,
+    userId: number,
+    page: number,
+    limit: number,
+  ) {
+    Q.skip((page - 1) * limit).take(limit);
+    Q.leftJoin('p.favourites', 'f')
+      .addSelect(`MAX(CASE WHEN f.userId = :userId THEN 1 ELSE 0 END)`, 'isFav')
+      .setParameter('userId', userId)
+      .addGroupBy('p.id');
+    const total = await Q.getCount(); // separate count, before raw select changes grouping semantics further
+
+    const { entities, raw } = await Q.getRawAndEntities();
+
+    const data = entities.map((post, i) => ({
+      ...post,
+      ...(userId ? { isFav: Boolean(Number(raw[i]?.isFav)) } : {}),
+    }));
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    };
+  }
+  private async getProductWithIsFav(
+    Q: SelectQueryBuilder<Product>,
+    userId: number,
+  ) {
+    Q.leftJoin('p.favourites', 'f')
+      .addSelect(`MAX(CASE WHEN f.userId = :userId THEN 1 ELSE 0 END)`, 'isFav')
+      .setParameter('userId', userId)
+      .addGroupBy('f.id');
+
+    const { entities, raw } = await Q.getRawAndEntities();
+    const entity = entities[0];
+
+    if (!entity) throw new NotFoundException('product not found');
+
+    return {
+      ...entity,
+      reviewsCount: entity.reviews?.length ?? 0,
+      ...(userId ? { isFav: !!raw[0]?.isFav } : {}),
+    };
   }
 }

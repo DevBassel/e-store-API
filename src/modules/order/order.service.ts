@@ -17,43 +17,44 @@ import { EmailService } from '../email/email.service';
 import { orederTepm } from '../email/templates/order.templet';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
-import { CouponsService } from '../coupons/coupons.service';
 import { paginate } from 'src/utils/paginate';
+import Stripe from 'stripe';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrderService {
+  stripe: Stripe;
+
   constructor(
+    private config: ConfigService,
     @Inject(forwardRef(() => CartService))
     private readonly cartServices: CartService,
     @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
     @InjectRepository(OrderItem)
     private readonly orderItemRepo: Repository<OrderItem>,
     private readonly emailService: EmailService,
-    private readonly couponService: CouponsService,
-  ) {}
+  ) {
+    this.stripe = new Stripe(config.getOrThrow('STRIPE_SK'));
+  }
   async create(createOrderDto: CreateOrderDto, user: JwtPayload) {
     const cartItems = await this.cartServices.findAll(user);
 
     if (!cartItems) throw new GoneException('your cart is empty O_o !!');
 
-    const coupon =
-      createOrderDto.coupon &&
-      (await this.couponService.validateCoupon(createOrderDto.coupon));
-
     const total = cartItems.items.reduce((p, c) => p + c.price, 0);
+    const { ...orderData } = createOrderDto;
+
     const createOrder = await this.orderRepo.save({
-      ...createOrderDto,
+      ...orderData,
       userId: user.id,
       total: total,
       shipingDate: null,
-      coupon: coupon ? coupon.value : null,
     });
 
     const orderItems = cartItems.items.map((item) => ({
       orderId: createOrder.id,
       productId: item.productId,
       quantity: item.quantity,
-      price_at_buy: item.product.price,
     }));
 
     await this.orderItemRepo.save(orderItems);
@@ -74,8 +75,9 @@ export class OrderService {
       .createQueryBuilder('order')
       .leftJoin('order.items', 'items')
       .leftJoin('items.product', 'product')
+      .leftJoin('order.coupon', 'coupon')
       .where('order.userId = :id', { id: user.id })
-      .select(['order', 'items', 'product']);
+      .select(['order', 'items', 'product', 'coupon']);
 
     status && Q.andWhere('order.status = :status', { status });
 
@@ -85,7 +87,7 @@ export class OrderService {
   async findOne(id: number, user: JwtPayload) {
     const order = await this.orderRepo.findOne({
       where: { id, userId: user.id },
-      relations: { items: { product: true } },
+      relations: { items: { product: true }, coupon: true },
     });
 
     if (!order) throw new NotFoundException('order not found');
@@ -96,14 +98,19 @@ export class OrderService {
   async getUserOrders(userId: number) {
     const order = await this.orderRepo.find({
       where: { userId },
-      relations: { items: { product: true } },
+      relations: { items: { product: true }, coupon: true },
     });
+
+    console.log(
+      '🚀 ~ order.service.ts:105 ~ OrderService ~ getUserOrders ~ order:',
+      order,
+    );
 
     return order;
   }
   async update(id: number, updateOrderDto: UpdateOrderDto, user: JwtPayload) {
     const order = await this.findOne(id, user);
-    if (!order) throw new NotFoundException('oreder not found');
+    if (!order) throw new NotFoundException('order not found');
 
     return this.orderRepo.save({
       ...order,
@@ -111,14 +118,47 @@ export class OrderService {
     });
   }
 
+  async orderPayed(
+    orderId: number,
+    paymentId: string,
+    totalPayed: number,
+    user: JwtPayload,
+  ) {
+    const order = await this.findOne(orderId, user);
+    return await this.orderRepo.save({
+      ...order,
+      paymentIntentId: paymentId,
+      totalPayed: totalPayed,
+      paymentStatus: PaymentStatus.DONE,
+      status: OrderStatus.SHIPING,
+    });
+  }
+
   async cancel(id: number, user: JwtPayload) {
-    await this.update(
-      id,
-      {
-        paymentStatus: PaymentStatus.CANCEL,
+    const order = await this.findOne(id, user);
+    if (order.paymentStatus === PaymentStatus.DONE) {
+      await this.stripe.refunds.create({
+        payment_intent: order.paymentIntentId,
+        amount: order.totalPayed,
+      });
+
+      await this.orderRepo.save({
+        ...order,
         status: OrderStatus.CANCEL,
-      },
-      user,
-    );
+        paymentStatus: PaymentStatus.REFUNDED,
+        totalRefunded: order.totalPayed,
+        totalPayed: null,
+      });
+      return;
+    } else {
+      await this.update(
+        id,
+        {
+          paymentStatus: PaymentStatus.CANCEL,
+          status: OrderStatus.CANCEL,
+        },
+        user,
+      );
+    }
   }
 }

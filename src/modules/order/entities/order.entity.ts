@@ -12,6 +12,7 @@ import { PaymentType } from '../enums/payment-type.enum';
 import { OrderItem } from './order-item.entity';
 import { PaymentStatus } from '../enums/payment-status.enum';
 import { OrderStatus } from '../enums/order-status.enum';
+import { Coupon } from 'src/modules/coupons/entities/coupon.entity';
 
 @Entity()
 export class Order {
@@ -30,8 +31,14 @@ export class Order {
   @Column()
   total: number;
 
+  @ManyToOne(() => Coupon, (coupon) => coupon.orders, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  coupon: Coupon;
+
   @Column({ nullable: true })
-  coupon: string;
+  couponId: number;
 
   @Column({ nullable: true })
   paymentStatus: PaymentStatus;
@@ -51,7 +58,13 @@ export class Order {
   @Column({ nullable: true })
   shipingDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
+  totalPayed: number;
+
+  @Column({ nullable: true })
+  totalRefunded: number;
+
+  @Column({ nullable: true })
   note: string;
 
   @CreateDateColumn()
